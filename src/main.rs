@@ -1,3 +1,4 @@
+mod handlers;
 mod server;
 
 use tracing::{subscriber, Level};
