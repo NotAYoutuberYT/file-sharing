@@ -1,0 +1,25 @@
+/* FIXME: don't import from web in production */
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+* {
+  font-family: "Roboto", sans-serif;
+}
+
+body {
+  background: #0f0f0f;
+}
+
+.file {
+  background: #264653;
+  color: white;
+
+  width: 20em;
+  height: 2em;
+  margin: .5em;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+}

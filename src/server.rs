@@ -8,7 +8,12 @@ use tokio::sync::broadcast::Sender;
 use tracing::info;
 
 use crate::handlers::{
-    page_get_handler::page_get_handler, upload_post_handler::upload_post_handler,
+    file_info_get_handler::file_info_get_handler,
+    index::{
+        css_get_handler::css_get_handler, html_get_handler::html_get_handler,
+        javascript_get_handler::javascript_get_handler,
+    },
+    upload_post_handler::upload_post_handler,
 };
 
 const FILE_UPLOAD_SIZE_LIMIT_BYTES: usize = 1000000000;
@@ -17,8 +22,11 @@ const FILE_UPLOAD_SIZE_LIMIT_BYTES: usize = 1000000000;
 /// if the port is zero, will broadcast the assigned port from the sender.
 pub async fn start_server(port: &str, tx: Option<Sender<usize>>) {
     let app = Router::new()
-        .route("/", get(page_get_handler))
+        .route("/", get(html_get_handler))
+        .route("/index.js", get(javascript_get_handler))
+        .route("/index.css", get(css_get_handler))
         .route("/api/ping", get(ping_get_handler))
+        .route("/api/files/info", get(file_info_get_handler))
         .route("/api/upload", post(upload_post_handler))
         .layer(DefaultBodyLimit::max(FILE_UPLOAD_SIZE_LIMIT_BYTES));
 
@@ -36,9 +44,8 @@ pub async fn start_server(port: &str, tx: Option<Sender<usize>>) {
             bind_address
                 .to_string()
                 .split(":")
-                .collect::<Vec<_>>()
-                .get(1)
-                .expect("failed getting port number: failed extracting port")
+                .last()
+                .expect("failed getting port number: couldn't find port in address")
                 .parse()
                 .expect("failed getting port number: bad parse to integer"),
         );
