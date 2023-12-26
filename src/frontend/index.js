@@ -2,6 +2,7 @@
 import { h, render } from "https://unpkg.com/preact?module";
 import htm from "https://unpkg.com/htm?module";
 
+// TODO: find a smarter method of updating (webhooks?)
 const html = htm.bind(h);
 
 function App(props) {
@@ -30,4 +31,21 @@ let update = async () => {
 };
 
 update();
-setInterval(update, 200);
+setInterval(update, 1000);
+
+document.getElementById('uploadForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  var fileInput = document.getElementById('file');
+
+  if (fileInput.files.length > 0) {
+      var file = fileInput.files[0];
+
+      var formData = new FormData();
+      formData.append(file.name, file);
+
+      fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+      })
+  }
+});

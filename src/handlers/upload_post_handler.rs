@@ -1,4 +1,5 @@
 use axum::{extract::Multipart, http::StatusCode};
+use tracing::error;
 
 #[axum::debug_handler]
 pub async fn upload_post_handler(mut multipart: Multipart) -> StatusCode {
@@ -6,7 +7,10 @@ pub async fn upload_post_handler(mut multipart: Multipart) -> StatusCode {
         let name = field.name().unwrap().to_string();
         let data = field.bytes().await.unwrap();
 
-        println!("Length of `{}` is {} bytes", name, data.len());
+        if let Err(write_error) = tokio::fs::write(format!("file_store/{name}"), data).await {
+            error!("{write_error}");
+            return StatusCode::INTERNAL_SERVER_ERROR;
+        }
     }
 
     StatusCode::ACCEPTED

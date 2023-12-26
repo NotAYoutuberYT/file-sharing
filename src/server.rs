@@ -21,6 +21,7 @@ const FILE_UPLOAD_SIZE_LIMIT_BYTES: usize = 1000000000;
 /// starts the http server. panics on bad port.
 /// if the port is zero, will broadcast the assigned port from the sender.
 pub async fn start_server(port: &str, tx: Option<Sender<usize>>) {
+    // TODO: add tracing in handlers
     let app = Router::new()
         .route("/", get(html_get_handler))
         .route("/index.js", get(javascript_get_handler))
